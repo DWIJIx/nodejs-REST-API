@@ -4,83 +4,73 @@ const { HttpError } = require("../helpers");
 const { ctrlWrapper } = require("../decorators");
 
 const contactAddSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
+  name: Joi.string().alphanum().min(2).max(30).required().messages({
+    "any.required": `"missing required name field"`,
+  }),
+  email: Joi.string().trim().email().required().messages({
+    "any.required": `"missing required email field"`,
+  }),
+  phone: Joi.string().required().messages({
+    "any.required": `"missing required phone field"`,
+  }),
 });
 
-const getAllContacts = async (req, res, next) => {
-  try {
-    const result = await contactsService.listContacts();
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
+const getAllContacts = async (req, res) => {
+  const result = await contactsService.listContacts();
+  res.json(result);
 };
 
-const getContactById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const result = await contactsService.getContactById(id);
-    if (!result) {
-      throw HttpError(404, `Movie with ${id} not found`);
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+const getContactById = async (req, res) => {
+  const { id } = req.params;
+  const result = await contactsService.getContactById(id);
+  if (!result) {
+    throw HttpError(404, `Movie with ${id} not found`);
   }
+  res.json(result);
 };
 
-const addContact = async (req, res, next) => {
-  try {
-    const { error } = contactAddSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const result = await contactsService.addContact(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
+const addContact = async (req, res) => {
+  const { error } = contactAddSchema.validate(req.body);
+  if (Object.keys(req.body).length === 0) {
+    throw HttpError(400, "missing fields");
+  } else if (error) {
+    throw HttpError(400, error.message);
   }
+  const result = await contactsService.addContact(req.body);
+  res.status(201).json(result);
 };
 
-const updateContact = async (req, res, next) => {
-  try {
-    console.log(req.body);
-    const { error } = contactAddSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { id } = req.params;
-    const result = await contactsService.updateContact(id, req.body);
-    if (!result) {
-      throw HttpError(404, `Movie with ${id} not found`);
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+const updateContact = async (req, res) => {
+  console.log(req.body);
+  const { error } = contactAddSchema.validate(req.body);
+  if (Object.keys(req.body).length === 0) {
+    throw HttpError(400, "missing fields");
+  } else if (error) {
+    throw HttpError(400, error.message);
   }
+  const { id } = req.params;
+  const result = await contactsService.updateContact(id, req.body);
+  if (!result) {
+    throw HttpError(404, `Movie with ${id} not found`);
+  }
+  res.json(result);
 };
 
-const removeContact = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const result = await contactsService.removeContact(id);
-    if (!result) {
-      throw HttpError(404, "Not found");
-    }
-    res.json({
-      message: "Contact deleted",
-    });
-  } catch (error) {
-    next(error);
+const removeContact = async (req, res) => {
+  const { id } = req.params;
+  const result = await contactsService.removeContact(id);
+  if (!result) {
+    throw HttpError(404, "Not found");
   }
+  res.json({
+    message: "Contact deleted",
+  });
 };
 
 module.exports = {
-  getAllContacts,
-  getContactById,
-  addContact,
-  updateContact,
-  removeContact,
+  getAllContacts: ctrlWrapper(getAllContacts),
+  getContactById: ctrlWrapper(getContactById),
+  addContact: ctrlWrapper(addContact),
+  updateContact: ctrlWrapper(updateContact),
+  removeContact: ctrlWrapper(removeContact),
 };
