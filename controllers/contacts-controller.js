@@ -5,13 +5,13 @@ const { ctrlWrapper } = require("../decorators");
 
 const contactAddSchema = Joi.object({
   name: Joi.string().alphanum().min(2).max(30).required().messages({
-    "any.required": `"missing required name field"`,
+    "any.required": "missing required name field",
   }),
   email: Joi.string().trim().email().required().messages({
-    "any.required": `"missing required email field"`,
+    "any.required": "missing required email field",
   }),
   phone: Joi.string().required().messages({
-    "any.required": `"missing required phone field"`,
+    "any.required": "missing required phone field",
   }),
 });
 
@@ -41,7 +41,6 @@ const addContact = async (req, res) => {
 };
 
 const updateContact = async (req, res) => {
-  console.log(req.body);
   const { error } = contactAddSchema.validate(req.body);
   if (Object.keys(req.body).length === 0) {
     throw HttpError(400, "missing fields");
