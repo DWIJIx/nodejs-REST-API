@@ -9,8 +9,9 @@ const mongoose = require("mongoose");
 const contactsPath = path.join(__dirname, "contacts.json");
 
 const listContacts = async () => {
-  const data = await fs.readFile(contactsPath);
-  return JSON.parse(data);
+  // const data = await fs.readFile(contactsPath);
+  const result = await book.find();
+  return result;
 };
 
 const getContactById = async (contactId) => {
