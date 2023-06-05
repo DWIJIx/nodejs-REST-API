@@ -17,10 +17,16 @@ router.post(
 
 router.put(
   "/:id",
-  validateBody(schemas.contactAddSchema),
+  validateBody(schemas.contactUpdateSchema),
   contactsController.updateContact
 );
 
 router.delete("/:id", contactsController.removeContact);
+
+router.patch(
+  "/:id/favorite",
+  validateBody(schemas.UpdateStatusContactSchema),
+  contactsController.updateStatusContact
+);
 
 module.exports = router;
