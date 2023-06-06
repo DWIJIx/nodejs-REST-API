@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { handleMongooseError } = require("../helpers");
 
 const Joi = require("joi");
 const contactAddSchema = Joi.object({
@@ -56,6 +57,8 @@ const contactsSchemaMongoose = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+contactsSchemaMongoose.post("save", handleMongooseError);
 
 module.exports = {
   contactAddSchema,
