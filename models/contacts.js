@@ -1,53 +1,45 @@
-const fs = require("fs/promises");
-const path = require("path");
-const { nanoid } = require("nanoid");
+const { contactsSchemaMongoose } = require("../schemas/contacts-schemas");
+const mongoose = require("mongoose");
 
-const contactsPath = path.join(__dirname, "contacts.json");
+const Contact = mongoose.model("Contact", contactsSchemaMongoose);
 
 const listContacts = async () => {
-  const data = await fs.readFile(contactsPath);
-  return JSON.parse(data);
-};
-
-const getContactById = async (contactId) => {
-  const allContacts = await listContacts();
-  const result = allContacts.find((contact) => contact.id === contactId);
-  return result || null;
-};
-
-const removeContact = async (contactId) => {
-  const allContacts = await listContacts();
-  const index = allContacts.findIndex((contact) => contact.id === contactId);
-  if (index === -1) {
-    return null;
-  }
-  const [result] = allContacts.splice(index, 1);
-  await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
+  const result = await Contact.find();
   return result;
 };
 
-const addContact = async ({ name, email, phone }) => {
-  const allContacts = await listContacts();
-  const newContact = {
-    id: nanoid(),
+const getContactById = async (id) => {
+  const result = await Contact.findOne({ _id: id });
+  return result || null;
+};
+
+const addContact = async ({ name, email, phone, favorite = false }) => {
+  const newContact = await Contact.create({
     name,
     email,
     phone,
-  };
-  allContacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
+    favorite,
+  });
   return newContact;
 };
 
 const updateContact = async (id, body) => {
-  const allContacts = await listContacts();
-  const index = allContacts.findIndex((contact) => contact.id === id);
-  if (index === -1) {
-    return null;
-  }
-  allContacts[index] = { id, ...body };
-  await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
-  return allContacts[index];
+  const result = await Contact.findOneAndUpdate({ _id: id }, body, {
+    new: true,
+  });
+  return result;
+};
+
+const removeContact = async (id) => {
+  const result = await Contact.findOneAndDelete({ _id: id });
+  return result;
+};
+
+const updateStatusContact = async (id, body) => {
+  const result = await Contact.findOneAndUpdate({ _id: id }, body, {
+    new: true,
+  });
+  return result;
 };
 
 module.exports = {
@@ -56,4 +48,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
