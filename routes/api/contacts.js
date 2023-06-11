@@ -7,7 +7,10 @@ const {
   validateBody,
   isValidId,
   validateBodyForFavorite,
+  authenticate,
 } = require("../../middlewares");
+
+router.use(authenticate);
 
 router.get("/", contactsController.getAllContacts);
 

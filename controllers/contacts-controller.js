@@ -3,7 +3,8 @@ const { HttpError } = require("../helpers");
 const { ctrlWrapper } = require("../decorators");
 
 const getAllContacts = async (req, res) => {
-  const result = await contactsService.listContacts();
+  const { _id: owner } = req.user;
+  const result = await contactsService.listContacts({ owner });
   res.json(result);
 };
 
@@ -17,7 +18,8 @@ const getContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const result = await contactsService.addContact(req.body);
+  const { _id: owner } = req.user;
+  const result = await contactsService.addContact({ ...req.body, owner });
   res.status(201).json(result);
 };
 
