@@ -7,7 +7,7 @@ const {
   validateBody,
   isValidId,
   validateBodyForFavorite,
-} = require("../../decorators");
+} = require("../../middlewares");
 
 router.get("/", contactsController.getAllContacts);
 
