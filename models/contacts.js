@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 const { contactsSchemaMongoose } = require("../schemas/contacts-schemas");
 
-const Contact = mongoose.model("Contact", contactsSchemaMongoose);
+const Contact = mongoose.model("contact", contactsSchemaMongoose);
 
-const listContacts = async ({ owner }) => {
-  const result = await Contact.find({ owner });
+const listContacts = async (owner, skip, limit) => {
+  const result = await Contact.find({ owner }, "", { skip, limit }).populate(
+    "owner",
+    "email"
+  );
   return result;
 };
 

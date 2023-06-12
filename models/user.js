@@ -5,7 +5,7 @@ const { userSchemaMongoose } = require("../schemas/users-schemas");
 const { HttpError } = require("../helpers");
 const { SECRET_KEY } = process.env;
 
-const User = mongoose.model("User", userSchemaMongoose);
+const User = mongoose.model("user", userSchemaMongoose);
 
 const regNewUser = async ({ password, email, subscription = "starter" }) => {
   const user = await User.findOne({ email });
