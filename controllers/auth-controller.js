@@ -1,4 +1,3 @@
-const { HttpError } = require("../helpers");
 const { ctrlWrapper } = require("../decorators");
 const userService = require("../models/user");
 
@@ -26,8 +25,15 @@ const getCurrent = async (req, res) => {
   });
 };
 
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await userService.logout(_id);
+  res.status(204).json({});
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
+  logout: ctrlWrapper(logout),
 };

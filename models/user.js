@@ -35,6 +35,7 @@ const login = async ({ password, email }) => {
     id: user._id,
   };
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+  await User.findByIdAndUpdate(user._id, { token });
   return {
     token,
     email: user.email,
@@ -42,8 +43,13 @@ const login = async ({ password, email }) => {
   };
 };
 
+const logout = async (id) => {
+  await User.findByIdAndUpdate(id, { token: "" });
+};
+
 module.exports = {
   regNewUser,
   login,
   User,
+  logout,
 };
