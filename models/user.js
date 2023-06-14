@@ -38,8 +38,10 @@ const login = async ({ password, email }) => {
   await User.findByIdAndUpdate(user._id, { token });
   return {
     token,
-    email: user.email,
-    subscription: user.subscription,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+    },
   };
 };
 
