@@ -1,10 +1,13 @@
-const { contactsSchemaMongoose } = require("../schemas/contacts-schemas");
 const mongoose = require("mongoose");
+const { contactsSchemaMongoose } = require("../schemas/contacts-schemas");
 
-const Contact = mongoose.model("Contact", contactsSchemaMongoose);
+const Contact = mongoose.model("contact", contactsSchemaMongoose);
 
-const listContacts = async () => {
-  const result = await Contact.find();
+const listContacts = async (owner, skip, limit) => {
+  const result = await Contact.find({ owner }, "", { skip, limit }).populate(
+    "owner",
+    "email"
+  );
   return result;
 };
 
@@ -13,12 +16,13 @@ const getContactById = async (id) => {
   return result || null;
 };
 
-const addContact = async ({ name, email, phone, favorite = false }) => {
+const addContact = async ({ name, email, phone, favorite = false, owner }) => {
   const newContact = await Contact.create({
     name,
     email,
     phone,
     favorite,
+    owner,
   });
   return newContact;
 };
