@@ -1,5 +1,10 @@
+const fs = require("fs/promises");
+const path = require("path");
 const { ctrlWrapper } = require("../decorators");
 const userService = require("../models/user");
+const Jimp = require("jimp");
+
+const avatarsPath = path.resolve("public", "avatars");
 
 const register = async (req, res) => {
   const newUser = await userService.regNewUser(req.body);
@@ -31,9 +36,24 @@ const logout = async (req, res) => {
   res.status(204).json({});
 };
 
+const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
+  const { path: oldPath, originalname } = req.file;
+  const newName = `${_id}_${originalname}`;
+  const newPath = path.join(avatarsPath, newName);
+  const resultUpload = await Jimp.read(oldPath);
+  resultUpload.resize(250, 250).write(newPath);
+  await fs.rename(oldPath, newPath);
+
+  const avatarURL = path.join("avatars", newName);
+  await userService.updateAvatar(_id, avatarURL);
+  res.json({ avatarURL });
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };
