@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { userSchemaMongoose } = require("../schemas/users-schemas");
 const { HttpError } = require("../helpers");
 const { SECRET_KEY } = process.env;
+const gravatar = require("gravatar");
 
 const User = mongoose.model("user", userSchemaMongoose);
 
@@ -14,9 +15,12 @@ const regNewUser = async ({ password, email, subscription = "starter" }) => {
     throw HttpError(409, "Email in use");
   }
   const hashPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
+
   const newUser = await User.create({
     password: hashPassword,
     email,
+    avatarURL,
     subscription,
   });
   return newUser;
@@ -45,8 +49,12 @@ const login = async ({ password, email }) => {
   };
 };
 
-const logout = async (id) => {
+const logout = async (id, avatarURL) => {
   await User.findByIdAndUpdate(id, { token: "" });
+};
+
+const updateAvatar = async (id, avatarURL) => {
+  await User.findByIdAndUpdate(id, { avatarURL });
 };
 
 module.exports = {
@@ -54,4 +62,5 @@ module.exports = {
   login,
   User,
   logout,
+  updateAvatar,
 };
