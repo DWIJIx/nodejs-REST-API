@@ -25,6 +25,14 @@ const userSchemaMongoose = new mongoose.Schema(
       type: String,
       default: "",
     },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
   },
   {
     versionKey: false,
@@ -51,8 +59,14 @@ const loginSchema = Joi.object({
   }),
 });
 
+const userEmailSchema = Joi.object({
+  email: Joi.string().required().messages({
+    "any.required": "missing required field email ",
+  }),
+});
 module.exports = {
   userSchemaMongoose,
   registerSchema,
   loginSchema,
+  userEmailSchema,
 };
