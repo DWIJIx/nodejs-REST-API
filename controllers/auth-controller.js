@@ -15,6 +15,17 @@ const register = async (req, res) => {
     },
   });
 };
+const verify = async (req, res) => {
+  const { verificationToken } = req.params;
+  await userService.verify(verificationToken);
+  res.json({ message: "Verification successful" });
+};
+
+const resendVerifyEmail = async (req, res) => {
+  const { email } = req.body;
+  await userService.resendVerifyEmail(email);
+  res.json({ message: "Verification email sent" });
+};
 
 const login = async (req, res) => {
   const result = await userService.login(req.body);
@@ -56,4 +67,6 @@ module.exports = {
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
   updateAvatar: ctrlWrapper(updateAvatar),
+  verify: ctrlWrapper(verify),
+  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
 };
